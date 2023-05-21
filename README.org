@@ -1,5 +1,39 @@
 ;-*- mode: Org; fill-column: 110;-*-
 
+- [Изучение данных](explore.org) так же смотри [Описание Датасетов](https://github.com/Anoncheg1/Hackaton_leaders2023#%D0%B4%D0%B0%D1%82%D0%B0%D1%81%D0%B5%D1%82%D1%8B)
+- [Average Precision@K основная метрика](metric.org)
+
+* выбор модели рекомендательной системы
+- [Мой конспект по рекомендательным системам](https://github.com/Anoncheg1/yet_another_insignificant_programming_notes/blob/main/data_science.md#org618cc3e)
+
+Выбор я делал из нейросетевых моделей GMCF и DLRM и инструментария для классических алгоритмов scikit-surprise
+
+Я выбрал сконцентрироваться на модели *Deep Learning Recommendation Model (DLRM)* на платформе pyTorch TorchRec,
+по причинам:
+- нейросетевые технологии показывают лучшую точность в последних научных статьях и рекомендуются
+ прфоессионалами, хорошо масштабируются и у меня есть опыт с этой технологией.
+- DLRM хорошо подходит для большого количества признаков и новые признаки легко добавить
+- DLRM модель опубликова в 2019-2020 годах и имеет развитое комьюнити, в интернете есть большое количество
+ информации и статей на эту тему, поэтому риски минимальны.
+
+*** DLRM vs GMCF
+Both models are highly scalable
+DLRM 2019
+- ability to handle massive amounts of feature data
+- excels at capturing *complex* user-item relationships
+GMCF 2021 pytorch
+- useful when there is limited user-item interaction data available
+- more adept at handling *sparse and incomplete data*
+- capture graph structure of user-item interactions
+
+*** DLRM pyTorch - TorchRec
+- platform https://github.com/pytorch/torchrec
+- Deep Learning Recommendation Model (DLRM)https://arxiv.org/abs/1906.00091
+- example (main in 502 line)  https://github.com/facebookresearch/dlrm/blob/main/torchrec_dlrm/dlrm_main.py
+  - Criteo Terabyte Dataset https://labs.criteo.com/2013/12/download-terabyte-click-logs/
+- article(800 GPU) https://www.adityaagrawal.net/blog/dnn/dlrm
+- article https://medium.com/swlh/deep-learning-recommendation-models-dlrm-a-deep-dive-f38a95f47c2c
+- article (multi GPU) https://catalog.ngc.nvidia.com/orgs/nvidia/resources/dlrm_for_pytorch
 * все задачи глобально
 - Интерфейс - пути, вопросы, фильтры -
   - четко разделить момент логина и риидонли - какие данные в каком режиме доступны
