@@ -1,0 +1,680 @@
+;-*- mode: Org; fill-column: 110;-*-
+
+* все задачи глобально
+- Интерфейс - пути, вопросы, фильтры -
+  - четко разделить момент логина и риидонли - какие данные в каком режиме доступны
+- анализ данных
+- пайплайн данных
+- Hормализация и упорядочивание данных, исправление всех косяков
+- Рекомендательная система - онлайн и ночной режим
+- географические данные и дополнительные расчеты - openstreetmap
+- Деплой c масштабированием
+- Ноухао слежки за пожилыми
+
+* задача рекомендательной системы как я ее вижу
+- максимально точно выбрать 10 релевантных групп для 4 направлений.
+  - выбрать признаки
+  - учесть, что пользователь в двух режимах риидонли и логина
+  - онлайн/офлайн
+  - 52335 пользователя сейчас - учесть частоту запросов
+* конспект ТЗ
+Для
+- женщины 55+
+- мужчины 60+
+- досрочные пенсионеры
+- третьи лица действующие в интересах москвичей старшего возраста??
+
+Цель: рекомендовать подходящую группу для занятий
+
+сценарии - это пути через которые дается рекомендация
+- поисковую строку
+- каталог групп с системой фильтрации
+- прохождение опроса, в котором участники отвечают на вопросы
+
+учитывающий поведение и паттерны потребления
+
+пользователи бывают
+- действующие - зарегистрированные в долголетие
+- потенциальные - не зарегистрированные.
+
+нужно запросить участник ли долголетия, может быть зареган на mos.ru
+история посещений и иные данные
+
+
+группы
+- не менее чем в три разных ключевых направлениях(для ума, для тела, для души)
+- и четвертое это какое-то доп образование с дипломом профессии
+
+группы бувают
+- формат занятий
+  - очные - приоритетны - должны быть близко к месту проживания
+  - онлайн
+- направления занятий (1,2,3 уровней)
+- район занятий (только для очных)
+- расписание(дня/недели)
+
+упоминается какой-то сервис записи что это??? записи на занятия??
+* Датасеты
+Датасет "группы": <<groups.csv>>
+- id код группы
+- направление 1 - level1 [[dict.csv]] - не номрализован, должен быть только dict_id
+- направление 2 - level2 [[dict.csv]] - не номрализован
+- направление 3 - level3 [[dict.csv]] - не номрализован
+- адрес площадки (для онлайн-занятий имеет какое-то техническое значение??)
+- округ площадки
+- район площадки
+- расписание в активных периодах
+- расписание в закрытых периодах
+- расписание в плановом периоде
+
+расписание - хз что за формат - может меняться, нужно брать из
+ "посещаемость".
+  - c 01.01.2023 по 31.03.2023, Пн., Ср. 19:10-20:10, без перерыва; c 18.04.2022 по 31.12.2022, Пн., Ср. 19:10-20:10, без перерыва; c 20.09.2019 по 31.12.2019, Пн., Ср. 19:00-20:00, без перерыва; c 13.01.2020 по 14.02.2020, Пн., Ср. 19:00-20:00, без перерыва; c 15.02.2020 по 31.12.2020, Пн., Ср. 19:30-20:30, без перерыва
+
+Датасет "Пользователи" <<users.csv>> - участники?
+- id
+- дата создания личного дела
+- пол
+- дата рождения
+- адрес проживания (до номера дома)
+
+Датасет "Посещаемость" (attend.csv)
+- id занятия - похоже внешний ключ таблицы занятий
+- id группы fk [[groups.csv]]
+- id участника fk [[users.csv]]
+- направление 2 - дублирует [[dict.csv]]
+- направление 3 - дублирует [[dict.csv]]
+- онлайн/оффлайн - выжима/regex на эти слова из "направление 2" и "направление 3"
+- дата занятия
+- время начала занятия
+- время окончания занятия
+
+
+Справочник направлений <<dict.csv>> - ненормализовання таблица
+- направления - для ума ,для души ,для тела
+- id_level1 -
+- level1 - текст
+- id_level2 -
+- level2 - текст
+- id_level3 -
+- level3 - текст
+- d_level1 - занятия, текст
+- d_level2 - занятия, текст, пусто?
+- d_level3 - занятия, текст, пусто?
+
+
+
+test.csv
+- id fk [[users.csv]]
+- id группы fk [[groups.csv]] - мы предполагаем, что здесь через запятую рекомендованные группы
+
+* проверка работы модели
+Нам дают файл test.csv с заполненным полем "ID участника" - пользователя?
+
+нужно заплнить топ 10 уникальных номеров групп - что бля? через запятую.
+наверное вписать номера групп через запятую, хз,??
+
+Оценивать будут по Average Precision@K (AP@K)
+
+требования - какая лицензия??
+- ссылка на публичный репозиторий git
+- ссылка сопроводительная документация - pdf, doc, docx - публичная??
+  - описать работы предсказательно модели - как работает или что???
+- ссылка на презентацию - pdf ppt pptx
+- ссылка на файл результата работы модели в файле test.csv
+- ссылка на прототип решения
+* ссылки
+- https://leaders2023.innoagency.ru/
+- https://www.mos.ru/city/projects/dolgoletie/
+
+* вопросы
+- Вид лицензии может выбирает сама команда? Она может быть закрытая?
+- В тестировании будут участвовать реальные люди? Это необъодимо, так
+ как в задании необходимо разработать критерии которые запонят
+ реальные люди, а судьи должны опросить этих людей, - совпали их ожидания
+ или нет.  В test.csv 201 человек.
+
+ответы
+- у нас 10 дней - всего лишь!.
+- нужно порекомендовать 10 групп, они эти группы сформировали как - куда человек активно ходил, сформированы при очных встречах с пожилыми операторами девушками
+- порядок групп в рекомендации важен
+* Average Precision@K
+AP@k = 1/k * sum(TP_seen(i)/i)
+
+where: TP_seen = 0 if: i-th is False else: TP seen till i.
+
+- ap@3 = 1/3(1/1+2/2+3/3) = 1 - все на месте
+- ap@3 = 1/3(1/1+0+0) = 0.33 - угадан только на первом месте
+- ap@3 = 1/3(0+0+1/3) = 0.11 - угадан на последнем месте
+
+#+begin_src python :results output :exports both :session s1
+import numpy as np
+def apk(true, pred):
+    pred_comp = np.zeros(pred.shape[0])
+    it = np.nditer(true)
+    for x in it:
+        pred_comp[it.iterindex] = x in pred
+    cum = (np.cumsum(pred_comp) / np.arange(1,pred_comp.shape[0] + 1)) * pred_comp
+    res = np.sum(cum)/pred_comp.shape[0]
+    return(res)
+
+true=np.array([3,  2,  82])
+pred=np.array([8,  10,  3])
+res = apk(true, pred)
+print(res)
+
+true=np.array([3,  2,  82])
+pred=np.array([82,  10,  11])
+res = apk(true, pred)
+print(res)
+#+end_src
+
+#+RESULTS:
+: 0.3333333333333333
+: 0.1111111111111111
+** links
+- https://habr.com/ru/companies/econtenta/articles/303458/
+- https://medium.com/@misty.mok/how-mean-average-precision-at-k-map-k-can-be-more-useful-than-other-evaluation-metrics-6881e0ee21a9
+- https://github.com/scikit-learn/scikit-learn/pull/4975
+
+* tz pdf
+
+1. Актуальность задачи
+С 2018 года в Москве работает проект “Московское долголетие”,
+который предоставляет москвичам старшего возраста (55+ для женщин и 60+
+для мужчин) возможность заниматься широким спектром
+образовательно-досуговых и оздоровительных активностей. Занятия
+проходят в группах офлайн и онлайн под руководством профессиональных
+аккредитованных педагогов и за пять лет стали важной частью городской
+инфраструктуры, повышающей качество жизни старшего поколения,
+уровень социализации и разносторонней активности.
+К настоящему времени более полумиллиона человек присоединились
+к проекту, а количество направлений занятий превысило несколько сотен.
+Ежемесячно десятки тысяч новых и действующих участников ищут
+подходящие для себя группы.
+В ближайшее время на странице “Московского долголетия”
+(https://www.mos.ru/city/projects/dolgoletie/) будет запущен сервис
+автоматизированной записи в группы, а в один из пользовательских путей
+планируется внедрить рекомендательные механики. Это рекомендательное
+решение сможет существенно сократить время на подбор релевантной
+группы для участника, а также сократит трудозатраты сотрудников
+Московского долголетия на консультирование граждан старшего возраста в
+рамках поиска подходящих занятий.
+2. Описание задачи
+В рамках задачи необходимо создать рекомендательный сервис,
+который поможет участникам (новым и уже действующим) “Московского
+долголетия” выбрать подходящую группу для занятий, основываясь на
+накопленных данных об активности пользователей в проекте. Это решение
+может стать частью сервиса записи в “Московское долголетие”, который
+будет запущен на MOS.ru в скором времени.
+В этом сервисе записи предусмотрено три базовых пользовательских
+сценария:
+а) поиск группы через поисковую строку;
+б) поиск через каталог групп с системой фильтрации;
+в) поиск через прохождение опроса, в котором участники отвечают на
+вопросы по своим интересам.
+С целью более релевантного подбора групп в рамках последнего
+сценария мы предлагаем разработать полноценный рекомендательный
+сервис/модуль, учитывающий поведение и паттерны потребления уже
+действующих участников.
+Пользователи рекомендательного сервиса делятся на следующие
+группы:
+а) действующие (уже зарегистрированные в проекте) участники
+“Московского долголетия”
+б) новые (потенциальные) участники
+Мы не идентифицируем пользователя (участник ли “Московского
+долголетия”) автоматически, даже если он уже авторизован на MOS.ru. Таким
+образом, на первом этапе взаимодействия с пользователем необходимо
+запросить данные, которые позволят нам определить - является ли он
+участником “Московского долголетия” или нет: ФИО, дату рождения.
+В случае, если пользователь не является участником, мы должны
+определить интересы и потребности посетителя и дать ему рекомендации
+по группам (через предустановленные фильтры), причем желательно не
+менее, чем в 3 разных ключевых направлениях (“для ума”, “для тела”, “для
+души”) и одном дополнительном (допобразование с получением диплома,
+получение новой профессии).
+В случае, если мы идентифицировали действующего участника, мы
+должны обратиться к истории его посещений и, учитывая ее (и/или иные
+данные), предложить дополнительные занятия.
+Занятия (группы) в “Московском долголетии” по формату проведения
+делятся на две части:
+а) очные занятия
+б) онлайн-занятия
+Таким образом, помимо направления занятий для очных групп мы
+должны приоритетно предложить пользователям занятия, проходящие
+максимально близко к месту его проживания. Приоритетным форматом в
+“Московском долголетии “являются очные занятия, участникам хакатона при
+проектировании рекомендательного сервиса предлагается учитывать этот
+фактор и предложить механики, направленные на вовлечение
+пользователей в оффлайн, даже если срез их интересов указывает на то, что
+они склонны выбрать онлайн-уроки.
+Исходные данные:
+Список параметров фильтрации групп в сервисе записи:
+● направления занятий (1,2,3 уровней)
+● формат занятий (очно / онлайн)
+● район занятий (для очных занятий)
+● расписание (дни недели / время)
+Список данных, содержащихся в датасете “Группы”:
+● код группы
+● направление 1
+● направление 2
+● направление 3
+● адрес площадок (для онлайн-занятий имеет техническое
+значение)
+● округ площад
+● район площадки
+● расписание1
+Список данных, содержащихся в датасете “Пользователи”:
+● уникальный номер
+● дата создания личного дела
+● пол
+● дата рождения
+● адрес проживания (детализация до многоквартирного дома)
+Список данных, содержащихся в датасете “Посещаемость”:
+● уникальный номер занятия
+● уникальный номер группы
+● уникальный номер участника
+● онлайн/офлайн
+● дата занятия
+● время начала занятия
+● время окончания занятия
+3. Проверка работы модели
+Результат работы модели необходимо будет записать в файле test.csv.
+Его структура будет следующей:
+● уникальный номер участника
+● уникальный номер группы
+Список уникальных номеров участников будет предоставлен в файле
+test.csv. Вам необходимо заполнить топ 10 уникальных номеров групп. В
+качестве разделителя использовать запятую.
+Оцениваться результат будет с помощью метрики Average Precision@K
+(AP@K)
+1 Следует учитывать, что расписание занятий может меняться в процессе работы групп, приоритетным
+является фактическое время проведения занятий из датасета “Посещаемость”, но при выводе
+результатов в сервисе записи учитывается именно расписание “в активном периоде
+4. Возможный пользовательский путь
+Взаимодействие с сервисом начинается после того, как пользователь
+нажимает на кнопку “Подобрать занятие” на посадочной странице Сервиса
+записи “Московского долголетия” (изобр. 1):
+Изображение 1. Посадочная страница сервиса
+На текущий момент пользователю предлагается сразу приступить к
+ответу на вопросы, которые позволяют определить сферы его интересов:
+Изображение 2. Предполагаемый опрос пользователя
+Участникам хакатона предлагается полностью разработать
+пользовательский путь после перехода в рекомендательный сервис.
+Результат должен быть представлен в виде каталога групп с
+предустановленными фильтрами:
+Изображение 3. Результат поиска
+Также возможно предложить дополнительные блоки, например,
+“Скоро начнутся занятия в группах ...” или “карта с локациями групп” (для
+очных занятий). Также если участник выбрал онлайн-формат, тем не менее
+после выборки по его интересам можно предложить отдельно карту с
+отметками оффлайн-групп, которые все же могут его заинтересовать, так как
+приоритетными для проекта являются занятия в очном формате.
+Следует учитывать, что у проекта есть направления, которые можно
+отнести к “промозанятиям”, которые можно предлагать вне зависимости от
+предпочтений участника (так как они привлекательны для подавляющего
+большинства): экскурсионные программы по городу, эксклюзивные лекции
+мастер-классы (в МГУ, Строгановке и т.п.). Участникам в рамках хакатона не
+предоставляется список таких групп, т.к. он имеет динамический характер, но
+подобный блок можно предусмотреть и заполнить его условными данными.
+Пользовательский путь в рамках рекомендательного сервиса
+заканчивается успехом на кнопке “Записаться”. В этот момент пользователю
+педлагается авторизоваться на MOS.ru (если это не было сделано ранее),
+либо зарегистрироваться в проекте, либо происходит запись в группу.
+5. Целевая аудитория
+Сервисом могут пользоваться как сами москвичи, подходящие под
+условия участия в проекте (55+ женщины и 60+ мужчины, а также
+“досрочные” пенсионеры), а также третьи лица, действующие в интересах
+москвичей старшего возраста.
+6. Источники данных
+Описание датасетов представлено в разделе 2
+Датасет “Группы” (groups.csv).
+Датасет “Пользователи” (users.csv).
+Датасете “Посещаемость” (attend.csv).
+Классификатор направлений занятий (“Справочник направлений”),
+разделенный по четырем уровням (dict.csv)
+Шаблон таблицы для заполнения результатами, со списком
+уникальных номеров пользователей (test.csv)
+7. Требования к сдаче решения
+Решение будет считаться полным если будут предоставлены
+следующие ссылки:
+● ссылка на публичный репозиторий git;
+● ссылка на сопроводительную документацию (формат pdf, doc,
+docx). В сопроводительной документации должно быть описание работы
+предсказательной модели.
+● ссылка на презентацию (формат pdf, ppt, pptx)
+● ссылка на файл результата работы модели в файле test.csv
+● ссылка на прототип решения
+8. Требования к UX/UI
+● Интерфейсы должны быть доступны и удобны в использовании, не
+содержать мелких элементов (учитывать особенности целевой аудитории -
+люди старшего возраста)
+● Сценарий использования рекомендательного сервиса и путь
+пользователя должны быть интуитивно понятны, общее количество ответов,
+которые мы хотим получить от пользователя в течение сессии, не должно
+превышать 15-20
+● Любые предлагаемые блоки на всех страницах сервиса должны
+быть обоснованы и решать общую задачу - максимальное сокращение пути
+пользователя до кнопки “Записаться” (в группу)
+9. Критерии, учитываемые при проведении предварительной
+экспертизы
+1. Подход коллектива к решению задачи
+2. Техническая реализация
+● Работоспособность решения;
+● Результат работы модели.
+3. Соответствие решения поставленной задаче
+4. Эффективность решения в рамках поставленной задачи
+10. Критерии, учитываемые при проведении финальной
+экспертизы
+1. Подход коллектива к решению задачи
+2. Техническая реализация
+● Работоспособность решения;
+● результат работы модели.
+3. Соответствие решения поставленной задаче
+4. Эффективность решения в рамках поставленной задачи
+● Особенно могут быть отмечены неочевидные и удачные
+решения в части UI/UX, учитывающие особенности целевой
+аудитории.
+5. Выступление на питч сессии
+● Убедительность и информативность;
+● Лаконичные и аргументированные ответы;
+● Соответствие регламенту выступления.
+
+* Average Precision@K (AP@K)
+*** wtf
+#+begin_src python :results output :exports both :session s1
+import warnings
+from functools import partial
+
+import numpy as np
+from scipy.sparse import csr_matrix
+from scipy.stats import rankdata
+
+from sklearn.utils import assert_all_finite
+from sklearn.utils import check_consistent_length
+from sklearn.utils.validation import _check_sample_weight
+from sklearn.utils import column_or_1d, check_array
+from sklearn.utils.multiclass import type_of_target
+from sklearn.utils.extmath import stable_cumsum
+from sklearn.utils.sparsefuncs import count_nonzero
+from sklearn.exceptions import UndefinedMetricWarning
+from sklearn.preprocessing import label_binarize
+from sklearn.utils._encode import _encode, _unique
+
+def _tie_averaged_precision_at_k(y_true, y_score, k):
+    """
+    Compute Precision@K by averaging over possible permutations of ties.
+    The relevance (`y_true`) of an index falling inside a tied group (in the order
+    induced by `y_score`) is replaced by the average relevance within this group.
+    The adjusted relevance then used to calculate the metric.
+    This amounts to averaging scores for all possible orderings of the tied
+    groups.
+    Parameters
+    ----------
+    y_true : ndarray
+        The true relevance scores (binary - 0/1 or False/True).
+    y_score : ndarray
+        Predicted scores (continuos).
+    k : int
+        Only consider the highest k scores in the ranking.
+    Returns
+    -------
+    precision_at_k : float
+        Precision@K averaged over possible permutation of ties.
+    References
+    ----------
+    McSherry, F., & Najork, M. (2008, March). Computing information retrieval
+    performance measures efficiently in the presence of tied scores. In
+    European conference on information retrieval (pp. 414-421). Springer,
+    Berlin, Heidelberg.
+    """
+    _, inv, counts = np.unique(-y_score, return_inverse=True, return_counts=True)
+    relevance_per_group = np.zeros(len(counts))
+    np.add.at(relevance_per_group, inv, y_true)
+    counts_cumsum = np.cumsum(counts)
+    tie_group = np.searchsorted(counts_cumsum, k)
+    counts_before_tie = counts_cumsum[tie_group - 1] if tie_group != 0 else 0
+    return (
+        relevance_per_group[:tie_group].sum()
+        + relevance_per_group[tie_group] * (k - counts_before_tie) / counts[tie_group]
+    ) / k
+
+
+def precision_at_k_score(
+    y_true, y_score, *, k=1, sample_weight=None, ignore_ties=False
+):
+    """Compute Precision@K.
+    Calculate precision for the top-K scored labels.
+    In Information Retrieval paradigm, each sample i represents a query,
+    ``y_true[i]`` - relevance indicators per document (relevant/not relevant),
+    and ``y_score[i]`` - predicted scores per document (used for ranking).
+    The top-scored documents are then considered to be "retrieved"
+    and being evaluated given their true relevance.
+    This ranking metric returns a high value if relevant documents are ranked high by
+    ``y_score``. Although the metric takes value in [0, 1] interval,
+    the best scoring function (``y_score``) may not achieve precision@k of 1
+    if the number of positive labels is less than k.
+    Parameters
+    ----------
+    y_true : ndarray of shape (n_samples, n_labels)
+        True relevance indicators of entities to be ranked.
+        Any non-zero value is treated as positive/relevant.
+    y_score : ndarray of shape (n_samples, n_labels)
+        Target scores, can either be probability estimates, confidence values,
+        or non-thresholded measure of decisions (as returned by
+        "decision_function" on some classifiers).
+    k : int, default=1
+        Only consider the highest k scores in the ranking.
+    sample_weight : ndarray of shape (n_samples,), default=None
+        Sample weights. If `None`, all samples are given the same weight.
+    ignore_ties : bool, default=False
+        Assume that there are no ties in y_score (which is likely to be the
+        case if y_score is continuous) for efficiency gains.
+    Returns
+    -------
+    precision_at_k : float in [0., 1.]
+        The averaged precision@k for all samples.
+    References
+    ----------
+    `Wikipedia entry for Precision At K
+    <https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Precision_at_k>`_
+    Manning, Christopher D.; Raghavan, Prabhakar; Schütze, Hinrich (2008).
+    Introduction to Information Retrieval. Cambridge University Press.
+    McSherry, F., & Najork, M. (2008, March). Computing information retrieval
+    performance measures efficiently in the presence of tied scores. In
+    European conference on information retrieval (pp. 414-421). Springer,
+    Berlin, Heidelberg.
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from sklearn.metrics import precision_at_k_score
+    >>> # we have groud-truth (binary) relevance of some answers to a query:
+    >>> true_relevance = [[0, 1, 0, 1]]
+    >>> # we predict some (relevance) scores for the answers
+    >>> scores = [[0.1, 0.2, 0.3, 0.4]]
+    >>> # we can get the true relevance of the top scored answer (precision@1)
+    >>> precision_at_k_score(true_relevance, scores)
+    1.0
+    >>> # we can get the average true relevance of the top k answers (precision@k)
+    >>> precision_at_k_score(true_relevance, scores, k=3)
+    0.66...
+    >>> # now we have some ties in our prediction
+    >>> scores = np.asarray([[0, 0, 1, 1]])
+    >>> # by default ties are averaged, so here we get the average
+    >>> # true relevance of our top predictions
+    >>> precision_at_k_score(true_relevance, scores, k=1)
+    0.5
+    >>> # we can choose to ignore ties for faster results, but only
+    >>> # if we know there aren't ties in our scores, otherwise we get
+    >>> # wrong results:
+    >>> precision_at_k_score(true_relevance, scores, k=1, ignore_ties=True)
+    0.0
+    """
+    y_true = check_array(y_true, ensure_2d=True)
+    if set(np.unique(y_true)) - {0, 1}:
+        raise ValueError(
+            "Relevance values (y_true) have to be 0 or 1. Got {} instead".format(
+                (set(np.unique(y_true)) - {0, 1}).pop()
+            )
+        )
+    y_score = check_array(y_score, ensure_2d=True)
+    check_consistent_length(y_true, y_score, sample_weight)
+    if y_true.shape != y_score.shape:
+        raise ValueError(
+            "Input matrices have inconsisten shapes: {} vs {}".format(
+                y_true.shape, y_score.shape
+            )
+        )
+    if not isinstance(k, (int, np.integer)) or k < 1 or k >= y_true.shape[1]:
+        raise ValueError(
+            "Expected k to be an integer from interval [1, {}). Got {} instead".format(
+                y_true.shape[1], k
+            )
+        )
+
+    if ignore_ties:
+        top_score_index = np.argpartition(-y_score, k)[:, :k]
+        top_scored_labels = y_true[
+            np.arange(top_score_index.shape[0])[:, np.newaxis], top_score_index
+        ]
+        precision_by_sample = top_scored_labels.mean(axis=1)
+    else:
+        precision_by_sample = [
+            _tie_averaged_precision_at_k(y_t, y_s, k)
+            for y_t, y_s in zip(y_true, y_score)
+        ]
+    return np.average(precision_by_sample, weights=sample_weight)
+
+true_relevance = [[1, 0, 0, 0]]
+# we predict some (relevance) scores for the answers
+scores = [[0.9, 0.2, 0.3, 0.4]]
+# we can get the true relevance of the top scored answer (precision@1)
+print(precision_at_k_score(true_relevance, scores,k=3))
+#+end_src
+
+#+RESULTS:
+: 0.3333333333333333
+
+** label_ranking_loss - nope
+#+begin_src python :results output :exports both :session s1
+from sklearn.metrics import label_ranking_average_precision_score
+# y_true = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+# y_score = np.array([[0, 0, 0], [0, 0.0, 1.0], [0, 0,1.0]])
+# print(1-label_ranking_loss(y_true, y_score)) # 0.333
+y_true = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+y_score = np.array([[0, 1, 0], [0, 0.0, 1.0], [0, 0,1.0]])
+print(label_ranking_average_precision_score(y_true, y_score))
+#+end_src
+
+#+RESULTS:
+: 0.5555555555555555
+
+** chatgpt
+#+begin_src python :results output :exports both :session s1
+import numpy as np
+
+def average_precision_score_multilabel(y_true, y_scores):
+    n_classes = y_true.shape[1]
+    aps = []
+    for i in range(n_classes):
+        y_true_i = y_true[:, i]
+        y_scores_i = y_scores[:, i]
+
+        # Sort predictions by score
+        sorted_indices = np.argsort(y_scores_i)[::-1]
+        y_true_i = y_true_i[sorted_indices]
+        y_scores_i = y_scores_i[sorted_indices]
+
+        # Calculate true positive and false positive counts
+        true_positives = np.cumsum(y_true_i)
+        false_positives = np.cumsum(1 - y_true_i)
+
+        # Remove duplicates
+        unique_indices = np.unique(y_scores_i, return_index=True)
+        print(np.flatter(unique_indices))
+        true_positives = true_positives[unique_indices]
+        false_positives = false_positives[unique_indices]
+
+        # Calculate precision and recall
+        precision = true_positives / (true_positives + false_positives)
+        print(true_positives, np.sum(y_true_i))
+        recall = true_positives[0] / np.sum(y_true_i)
+
+        # Calculate AP using trapezoidal rule
+        ap = np.sum((recall[1:] - recall[:-1]) * (precision[1:] + precision[:-1]) / 2)
+        aps.append(ap)
+
+    # Calculate mean AP
+    return np.mean(aps)
+y_true = np.array([[0, 1, 2, 3]])
+y_scores = np.array([[0.1, 0.4, 0.6, 0.8]])
+print(average_precision_score_multilabel(y_true, y_scores))
+#+end_src
+
+#+RESULTS:
+
+#+end_src
+
+** multilabel - Mean Average Precision (MAP) - information retrival - Mean Average Precision at K (MAP@K)
+- https://stackoverflow.com/questions/48003041/mean-average-precision-for-multi-label-multi-class-data/48064073
+- https://towardsdatascience.com/map-mean-average-precision-might-confuse-you-5956f1bfa9e2
+- https://stackoverflow.com/questions/55261978/how-to-calculate-mean-average-precision-map-using-tensorflow
+** Mean_reciprocal_rank
+https://en.wikipedia.org/wiki/Mean_reciprocal_rank
+(1/count_q) * 1/rank_i   - do not count
+
+| cat   | catten, cati, *cats*   | cats    | 3 | 1/3 |
+| torus | torii, *tori*, toruses | tori    | 2 | 1/2 |
+| virus | *viruses*, virii, viri | viruses | 1 | 1   |
+ (1/3 + 1/2 + 1)/3 = 11/18 or about 0.61.
+** Mean Average Precision (MAP)
+just sum(average_precision_score)/q  q -count of queries
+** label_ranking_average_precision_score? nope
+** Average Precision binary (sklearn.metrics.average_precision_score)
+#+begin_src python :results output :exports both :session s1
+from sklearn.metrics import average_precision_score
+y_true = np.array([1, 0, 0])
+y_scores = np.array([3, 2, 1])
+print(average_precision_score(y_true.T, y_scores))
+#+end_src
+
+#+RESULTS:
+: 1.0
+
+** Precision at 10 = top_k_accuracy_score (sklearn.metrics) (equal to precision_at_k)
+- https://scikit-learn.org/stable/modules/generated/sklearn.metrics.top_k_accuracy_score.html#sklearn.metrics.top_k_accuracy_score
+- https://scikit-learn.org/stable/modules/model_evaluation.html#top-k-accuracy-score
+- best https://www.baeldung.com/cs/top-n-accuracy-metrics
+  частного случая задачи ранжирования — построения рекомендательного алгоритма
+
+Ранжирование — задача сортировки
+
+default labels = 0,1,2,3
+
+#+begin_src python :results output :exports both :session s1
+import numpy as np
+from sklearn.metrics import top_k_accuracy_score
+y_true = np.array([0, 1, 2, 2]) # true ordered list of classes
+y_score = np.array([[0.5, 0.3, 0.0],  # 0 position, 0 and 1 highest, for k=1 True, for k=2 True
+                    [0.9, 0.1, 0.0],  # 1 position, 0 and 1 highest, for k=1 False, for k=2 True
+                    [0.2, 0.0, 0.1],  # 2 position, 0 and 2 highest, for k=1 False, for k=2 True
+                    [0.7, 0.2, 0.1],]) # 2 position, 0 and 2 highest, for k=1 False, for k=2 False
+print((top_k_accuracy_score(y_true, y_score, k=1, normalize=True),
+       top_k_accuracy_score(y_true, y_score, k=2, normalize=True))) # , labels=['as', 'asd', 'asdg']
+                    #+end_src
+
+#+RESULTS:
+: (0.25, 0.75)
+
+classes = группы
+
+y_true = users
+
+y_score = scoring for every class
+
+Порядок групп не учитывается, главное дать 10 релевантных.
+* команда
+- Mikhail Rovnyagin - тимлид
+- Дмитрий Михайлович у нас просто гуру девопса, фронта и бека.
+- Сергей Сергеевич - мега спец по вычислениям и инфре)
+- Татьяной Александровной, моей женой нам не страшна главная цель любого хакатона - преза
