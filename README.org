@@ -1,10 +1,10 @@
 ;-*- mode: Org; fill-column: 110;-*-
 
-- [Изучение данных](explore.org) так же смотри [Описание Датасетов](https://github.com/Anoncheg1/Hackaton_leaders2023#%D0%B4%D0%B0%D1%82%D0%B0%D1%81%D0%B5%D1%82%D1%8B)
-- [Average Precision@K основная метрика](metric.org)
+- [[explore.org][Изучение данных]] так же смотри [[https://github.com/Anoncheg1/Hackaton_leaders2023#%D0%B4%D0%B0%D1%82%D0%B0%D1%81%D0%B5%D1%82%D1%8B][Описание Датасетов]]
+- [[metric.org][Average Precision@K основная метрика]]
 
 * выбор модели рекомендательной системы
-- [Мой конспект по рекомендательным системам](https://github.com/Anoncheg1/yet_another_insignificant_programming_notes/blob/main/data_science.md#org618cc3e)
+- [[https://github.com/Anoncheg1/yet_another_insignificant_programming_notes/blob/main/data_science.md#org618cc3e][Мой конспект по рекомендательным системам]]
 
 Выбор я делал из нейросетевых моделей GMCF и DLRM и инструментария для классических алгоритмов scikit-surprise
 
