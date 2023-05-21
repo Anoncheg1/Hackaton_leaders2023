@@ -1,6 +1,6 @@
 ;-*- mode: Org; fill-column: 110;-*-
 
-- [[explore.org][Изучение данных]] так же смотри [[https://github.com/Anoncheg1/Hackaton_leaders2023#%D0%B4%D0%B0%D1%82%D0%B0%D1%81%D0%B5%D1%82%D1%8B][Описание Датасетов]]
+- [[explore.org][Изучение данных]] , а так же смотри: [[https://github.com/Anoncheg1/Hackaton_leaders2023#%D0%B4%D0%B0%D1%82%D0%B0%D1%81%D0%B5%D1%82%D1%8B][Описание Датасетов]]
 - [[metric.org][Average Precision@K основная метрика]]
 
 * выбор модели рекомендательной системы
